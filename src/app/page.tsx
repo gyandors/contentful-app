@@ -1,14 +1,45 @@
 import styles from "./page.module.css";
-import { getHeroSection, getFeatureSection, getWorkItems } from "../lib/api";
+import {
+  getHeroSection,
+  getFeatureSection,
+  getWorkItems,
+  WorkItem,
+} from "../lib/api";
 import Link from "next/link";
+import { Metadata } from "next";
+
+// Metadata for SEO
+export const metadata: Metadata = {
+  title: "Welcome to Our Platform",
+  description:
+    "Discover amazing features and transform your experience with our innovative solutions",
+  openGraph: {
+    title: "Welcome to Our Platform",
+    description:
+      "Discover amazing features and transform your experience with our innovative solutions",
+    type: "website",
+  },
+};
+
+// Force dynamic rendering to ensure fresh data on each request
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  // Fetch data from Contentful
-  const [heroData, featureData, workItems] = await Promise.all([
-    getHeroSection(),
-    getFeatureSection(),
-    getWorkItems(),
-  ]);
+  // Fetch data from Contentful with error handling
+  let heroData = null;
+  let featureData = null;
+  let workItems: WorkItem[] = [];
+
+  try {
+    [heroData, featureData, workItems] = await Promise.all([
+      getHeroSection(),
+      getFeatureSection(),
+      getWorkItems(),
+    ]);
+  } catch (error) {
+    console.error("Error fetching data from Contentful:", error);
+    // Continue with fallback data
+  }
 
   // console.log(
   //   "-------------------------------------heroData-------------------------------------"
@@ -37,12 +68,21 @@ export default async function Home() {
         />
         <div className={styles.heroOverlay} />
         <div className={styles.heroContent}>
-          <h1 className={styles.heroTitle}>{heroData?.title}</h1>
-          <p className={styles.heroSubtitle}>{heroData?.subtitle}</p>
+          <h1 className={styles.heroTitle}>
+            {heroData?.title || "Welcome to Our Platform"}
+          </h1>
+          <p className={styles.heroSubtitle}>
+            {heroData?.subtitle ||
+              "Discover amazing features and transform your experience with our innovative solutions"}
+          </p>
           <button className={styles.ctaButton}>
-            <Link href={heroData?.ctaText.fields.url}>
-              {heroData?.ctaText.fields.text}
-            </Link>
+            {heroData?.ctaText?.fields?.url ? (
+              <Link href={heroData.ctaText.fields.url}>
+                {heroData.ctaText.fields.text || "Get Started"}
+              </Link>
+            ) : (
+              "Get Started"
+            )}
           </button>
         </div>
       </section>
@@ -50,12 +90,19 @@ export default async function Home() {
       {/* Two Column Section */}
       <section className={styles.twoColumn}>
         <div className={styles.twoColumnContent}>
-          <h2>{featureData?.title}</h2>
-          <p>{featureData?.description}</p>
+          <h2>{featureData?.title || "Why Choose Us"}</h2>
+          <p>
+            {featureData?.description ||
+              "We provide cutting-edge solutions that help businesses grow and succeed in the digital age. Our team of experts is dedicated to delivering the best possible experience."}
+          </p>
           <button className={styles.ctaButton}>
-            <Link href={featureData?.ctaText.fields.url}>
-              {featureData?.ctaText.fields.text}
-            </Link>
+            {featureData?.ctaText?.fields?.url ? (
+              <Link href={featureData.ctaText.fields.url}>
+                {featureData.ctaText.fields.text || "Learn More"}
+              </Link>
+            ) : (
+              "Learn More"
+            )}
           </button>
         </div>
         <div
@@ -85,11 +132,25 @@ export default async function Home() {
               )
             )
           ) : (
-            // Fallback if no images or wrong structure
-            <div
-              className={styles.gridItem}
-              style={{ backgroundImage: "url('/grid-1.jpg')" }}
-            />
+            // Fallback grid items if no Contentful data
+            <>
+              <div
+                className={styles.gridItem}
+                style={{ backgroundImage: "url('/grid-1.jpg')" }}
+              />
+              <div
+                className={styles.gridItem}
+                style={{ backgroundImage: "url('/grid-2.jpg')" }}
+              />
+              <div
+                className={styles.gridItem}
+                style={{ backgroundImage: "url('/grid-3.jpg')" }}
+              />
+              <div
+                className={styles.gridItem}
+                style={{ backgroundImage: "url('/grid-4.jpg')" }}
+              />
+            </>
           )}
         </div>
       </section>
