@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import client from "./contentful";
 
 export interface HeroSection {
@@ -28,13 +29,7 @@ export interface FeatureSection {
 
 export interface WorkItem {
   title: string;
-  image?: {
-    fields: {
-      file: {
-        url: string;
-      };
-    };
-  };
+  image?: ContentfulAsset[] | ContentfulAsset;
 }
 
 // Type for Contentful asset
@@ -105,7 +100,7 @@ export async function getWorkItems(): Promise<WorkItem[]> {
 
     return response.items.map((item) => ({
       title: item.fields.entryTitle as string,
-      image: item.fields.images as ContentfulAsset,
+      image: item.fields.images as ContentfulAsset[] | ContentfulAsset,
     }));
   } catch (error) {
     console.error("Error fetching work items:", error);

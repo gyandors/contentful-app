@@ -1,7 +1,6 @@
 import styles from "./page.module.css";
 import { getHeroSection, getFeatureSection, getWorkItems } from "../lib/api";
 import Link from "next/link";
-import Image from "next/image";
 
 export default async function Home() {
   // Fetch data from Contentful
@@ -19,10 +18,10 @@ export default async function Home() {
   //   "-------------------------------------featureData-------------------------------------"
   // );
   // console.log(featureData);
-  console.log(
-    "-------------------------------------workItems-------------------------------------"
-  );
-  console.log(workItems);
+  // console.log(
+  //   "-------------------------------------workItems-------------------------------------"
+  // );
+  // console.log(workItems);
 
   return (
     <main>
@@ -71,18 +70,27 @@ export default async function Home() {
 
       {/* Image Grid Section */}
       <section className={styles.imageGrid}>
-        <h2>Our Work</h2>
+        <h2>Gallery</h2>
         <div className={styles.gridContainer}>
-          {workItems[0].image.map((item, index) => (
+          {workItems[0]?.image && Array.isArray(workItems[0].image) ? (
+            workItems[0].image.map(
+              (item: { fields: { file: { url: string } } }, index: number) => (
+                <div
+                  key={index}
+                  className={styles.gridItem}
+                  style={{
+                    backgroundImage: `url(https:${item.fields.file.url})`,
+                  }}
+                />
+              )
+            )
+          ) : (
+            // Fallback if no images or wrong structure
             <div
-              key={index}
               className={styles.gridItem}
-              style={{
-                backgroundImage: `url(https:${item.fields.file.url})`,
-              }}
-              title={item.title}
+              style={{ backgroundImage: "url('/grid-1.jpg')" }}
             />
-          ))}
+          )}
         </div>
       </section>
     </main>

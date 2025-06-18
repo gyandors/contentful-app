@@ -89,6 +89,12 @@
   margin: 0 auto;
 }
 
+.imageGrid h2 {
+  font-size: x-large;
+
+  margin-bottom: 1rem;
+}
+
 .gridContainer {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
