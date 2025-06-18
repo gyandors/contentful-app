@@ -47,6 +47,7 @@
 }
 
 .ctaButton {
+  margin: 1rem 0;
   padding: 1rem 2rem;
   font-size: 1.2rem;
   background-color: #007bff;
